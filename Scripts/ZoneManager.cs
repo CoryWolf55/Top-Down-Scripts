@@ -9,7 +9,7 @@ public class ZoneManager : MonoBehaviour
     private float speed = 2f;
     [SerializeField]
     private float startSize = 50f;
-    public List<GameObject> generators = new List<GameObject>();
+    public List<GeneratorController> generators = new List<GeneratorController>();
     private Vector3 newSize = Vector3.zero;
     private bool enableChange = false;
     [SerializeField]
@@ -53,7 +53,7 @@ public class ZoneManager : MonoBehaviour
         do
         {
             transform.localScale = Vector3.Lerp(transform.localScale, newSize, Time.deltaTime * speed);
-            Debug.Log(Mathf.Round(transform.localScale.x) + " : " + Mathf.Round(newSize.x));
+           
             yield return null; // wait one frame
         }
         while (Mathf.Abs(transform.localScale.x - newSize.x) > tolerance);
@@ -63,15 +63,15 @@ public class ZoneManager : MonoBehaviour
     }
 
     private void GetGenerators()
-    {   
-        GameObject[] g = GameObject.FindGameObjectsWithTag("Generator");
+    {
+        GeneratorController[] g = FindObjectsOfType<GeneratorController>();
 
         //label generators
         float distance = 0;
         float lastDistance = 0;
         for(int i = 0; i < g.Length; i++)
         {
-            distance = Vector3.Distance(this.transform.position, g[i].transform.position);
+            distance = Vector3.Distance(this.transform.position, g[i].gameObject.transform.position);
 
             if (lastDistance == 0)
             {
@@ -92,6 +92,7 @@ public class ZoneManager : MonoBehaviour
         }
 
     }
+
 
    
 }

@@ -10,7 +10,7 @@ public class InteractField : MonoBehaviour
 
             //Display UI
             //Test 
-            ZoneManager.instance.ChangeZone(100f);
+            ZoneManager.instance.ChangeZone(150f);
             
         }
     }

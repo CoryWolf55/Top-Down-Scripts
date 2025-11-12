@@ -4,7 +4,7 @@ using System.Collections;
 
 public class ZoneManager : MonoBehaviour
 {
-    public static ZoneManager instance { get; private set; }
+    public static ZoneManager instance;
     [SerializeField]
     private float speed = 2f;
     [SerializeField]
@@ -19,6 +19,11 @@ public class ZoneManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         instance = this;
     }
 
@@ -45,12 +50,13 @@ public class ZoneManager : MonoBehaviour
 
     private IEnumerator ChangeZoneRoutine()
     {
-        while (Mathf.Abs(transform.localScale.x - newSize.x) > tolerance)
+        do
         {
             transform.localScale = Vector3.Lerp(transform.localScale, newSize, Time.deltaTime * speed);
             Debug.Log(Mathf.Round(transform.localScale.x) + " : " + Mathf.Round(newSize.x));
             yield return null; // wait one frame
         }
+        while (Mathf.Abs(transform.localScale.x - newSize.x) > tolerance);
 
         transform.localScale = newSize; // ensure exact final size
         Debug.Log("Finished changing zone.");

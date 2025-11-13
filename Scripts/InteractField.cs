@@ -11,7 +11,7 @@ public class InteractField : MonoBehaviour
             //Display UI
             //Test 
             ZoneManager.instance.ChangeZone(150f);
-            ZoneManager.instance.generators[0].ActivateGenerator(100f);
+            ZoneManager.instance.generators[0].ToggleGenerator(0f);
 
         }
     }

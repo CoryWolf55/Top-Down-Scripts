@@ -15,6 +15,9 @@ public class ZoneManager : MonoBehaviour
     [SerializeField]
     private float tolerance = 0.01f;
 
+    //Player in zone
+    private bool playerInZone = true;
+
     private Coroutine zoneRoutine;
 
     private void Awake()
@@ -33,12 +36,9 @@ public class ZoneManager : MonoBehaviour
         ChangeZone(startSize);
     }
 
-
-
-
-
     public void ChangeZone(float size)
     {
+        if (!PowerManager.instance.CheckZonePower(size)) return;
         Debug.Log("Changing Zone to size: " + size);
         newSize = new Vector3(size, size, size);
 
@@ -93,6 +93,9 @@ public class ZoneManager : MonoBehaviour
 
     }
 
+    public void InZone(bool inZone)
+    {
+        playerInZone = inZone;
+    }
 
-   
 }

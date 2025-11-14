@@ -48,6 +48,9 @@ public class PowerManager : MonoBehaviour
         //simple formula for testing purposes
         float powerDraw = size;
 
+
+        return false;
+
         //If not, trigger power outage effects
     }
 

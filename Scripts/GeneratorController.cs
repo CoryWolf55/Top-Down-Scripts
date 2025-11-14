@@ -21,12 +21,21 @@ public class GeneratorController : MonoBehaviour
         
         
         tLevel = transparencyLevel;
-        if(tLevel <= 0f) { tLevel = 0.1f; isActive = false; } //activate generator
-        else { isActive = true; }
+        if(tLevel <= 0f)
+        { 
+            tLevel = 0.1f; 
+            isActive = false; 
+            PowerManager.instance.RemovePowerGeneration(unitsPerMin);
+        } 
+        else 
+        {
+            isActive = true;
+            PowerManager.instance.AddPowerGeneration(unitsPerMin);
+        }
         // Minimum visibility level
 
-        //Generate Power
-        PowerManager.instance.UpdatePowerGeneration(unitsPerMin);
+      
+        
 
 
         //Apply effects

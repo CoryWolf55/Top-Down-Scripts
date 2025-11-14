@@ -112,7 +112,7 @@ public class Spawner : MonoBehaviour
         {
             IsSpawnCloseEnough();
             if (closeSpawns == null)
-                currentSpawn = ChaosSpawn();
+                currentSpawn = ChaosSpawn(0,0);
             else
             {
                 do { currentSpawn = closeSpawns[Random.Range(0, closeSpawns.Count)].position; }
@@ -122,7 +122,7 @@ public class Spawner : MonoBehaviour
         }
         else
         {
-            currentSpawn = ChaosSpawn();
+            currentSpawn = ChaosSpawn(0,0);
         }
         return currentSpawn;
     }
@@ -174,15 +174,21 @@ public class Spawner : MonoBehaviour
 
     }
 
-    private Vector3 ChaosSpawn()
+    public Vector3 ChaosSpawn(float range, int maxAttempts)
     {
         counter = 0;
+
+        if (range == 0)
+            range = chaosSpawnMaxRange;
+        if(maxAttempts == 0)
+            maxAttempts = 100;
+
 
         while (true)
         {
             //rays
             Ray ray = new Ray();
-            ray.origin = new Vector3(Random.Range(-chaosSpawnMaxRange, chaosSpawnMaxRange), maxWorldHight, Random.Range(-chaosSpawnMaxRange, chaosSpawnMaxRange));
+            ray.origin = new Vector3(Random.Range(-range, range), maxWorldHight, Random.Range(-range, range));
             ray.direction = Vector3.down;
 
             Physics.Raycast(ray, out hit, maxWorldHight);
@@ -208,7 +214,7 @@ public class Spawner : MonoBehaviour
             {
                 return hit.point;
             }
-            else if (counter >= 100)
+            else if (counter >= maxAttempts)
                 return spawns[Random.Range(0, spawns.Count)].position;
 
             counter++;

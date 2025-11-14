@@ -30,7 +30,9 @@ public class EnemyController : MonoBehaviour
     private bool usingNavMesh = false;
     private bool obstacleDetected = false;
     [SerializeField]
-    
+
+    private HealthBarManager healthBar;
+
 
     void Awake()
     {
@@ -56,6 +58,9 @@ public class EnemyController : MonoBehaviour
         flowField = FlowfieldGenerator.instance;
         if (flowField == null)
             Debug.LogWarning("Flowfield not assigned!");
+
+        healthBar = GetComponentInChildren<HealthBarManager>();
+        healthBar.SetMaxHealth(currentHealth);
     }
 
     void FixedUpdate()
@@ -194,6 +199,8 @@ public class EnemyController : MonoBehaviour
             {
                 Die();
             }
+
+            healthBar.SetHealth(currentHealth);
         }
     }
 

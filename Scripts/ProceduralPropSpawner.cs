@@ -42,11 +42,19 @@ public class ProceduralPropSpawner : MonoBehaviour
                 Debug.Log("Fail: Raycast did not hit ground");
                 continue;
             }
-
-            Vector3 spawnPos = hit.point + Vector3.up * groundOffset;
-
+            
             // choose prop type
             PropType chosen = props[Random.Range(0, props.Count)];
+
+            Vector3 p = new Vector3();
+            if (chosen.disableCollider)
+                p = hit.point;
+            else
+                p = Spawner.instance.ChaosSpawn(spawnRadius, spawnCount);
+
+            Vector3 spawnPos = p + Vector3.up * groundOffset;
+
+
 
             // height filtering
             if (spawnPos.y < chosen.minHeight || spawnPos.y > chosen.maxHeight)
@@ -83,6 +91,8 @@ public class ProceduralPropSpawner : MonoBehaviour
                     Random.Range(0, 360f),
                     Random.Range(-chosen.tiltAmount, chosen.tiltAmount))
                 : Quaternion.Euler(0, Random.Range(0, 360f), 0);
+
+           
 
             GameObject obj = Instantiate(chosen.prefab, spawnPos, rot);
 

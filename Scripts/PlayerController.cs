@@ -32,7 +32,10 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public Vector3 point;
 
-    
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 100;
+        private float currentHealth;
+    private HealthBarManager healthBar;
 
 
 
@@ -66,9 +69,15 @@ public class PlayerController : MonoBehaviour
         moveSpeedDefault = movementSpeed;
         currentStamina = maxStamina;
         defaultMaxSpeed = maxSpeed;
+
+        //Get Health
+        healthBar = GetComponentInChildren<HealthBarManager>();
+        healthBar.SetMaxHealth(maxHealth);
+        currentHealth = maxHealth;
+
     }
 
-    
+
 
 
     private void FixedUpdate()
@@ -144,6 +153,15 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        
+        currentHealth -= damage;
+        if (currentHealth <= 0) 
+        {
+            currentHealth = 0;
+            Debug.Log("Player Died");
+        }
+
+        healthBar.SetHealth(currentHealth);
 
     }
 

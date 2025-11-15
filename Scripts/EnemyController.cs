@@ -207,7 +207,7 @@ public class EnemyController : MonoBehaviour
     public void Die()
     {
         Spawner.instance.RemoveEntity(gameObject);
-        GetComponent<LootDrop>().Drop(transform.position);
+        GetComponent<LootDrop>().Drop(new Vector3(transform.position.x, transform.position.y - transform.position.y *0.5f, transform.position.z));
         Destroy(gameObject);
     }
 

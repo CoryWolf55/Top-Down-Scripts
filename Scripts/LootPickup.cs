@@ -11,11 +11,20 @@ public class LootPickup : MonoBehaviour
         item = newItem;
         amount = newAmount;
 
-        // Optional: change visual/icon based on item
-        var meshRenderer = GetComponentInChildren<MeshRenderer>();
-        if (meshRenderer != null && item.mesh != null)
+
+
+        if (item.mesh != null)
         {
-            // Could set a material texture or sprite here
+            Vector3 scale = transform.localScale;
+            MeshFilter mf = GetComponent<MeshFilter>();
+            mf.sharedMesh = item.mesh;  // or .mesh if you want a unique copy
+            transform.localScale = scale;
+
+            Debug.Log("LootPickup initialized with item: " + item.itemName + " Amount: " + amount);
+        }
+        else
+        {
+            Debug.LogWarning("Mesh is null on LootPickup initialization.");
         }
     }
 
@@ -34,7 +43,7 @@ public class LootPickup : MonoBehaviour
         {
            // GeneratorStorage.Instance.TryAddItem(item, amount);
             Claim(false);
-            Destroy(gameObject);
+            
         }
     }
     public void Claim(bool b)
@@ -44,6 +53,11 @@ public class LootPickup : MonoBehaviour
     public bool BeingPickedUp()
     {
         return beingTracked;
+    }
+
+    public bool Available()
+    {
+        return !beingTracked;
     }
 
 }

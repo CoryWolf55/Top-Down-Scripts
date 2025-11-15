@@ -6,7 +6,7 @@ using Unity.AI.Navigation;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-   
+    [SerializeField] private GameObject Base;
 
     public NavMeshSurface surface;
 
@@ -34,6 +34,11 @@ public class GameManager : MonoBehaviour
         surface.BuildNavMesh();
         FlowfieldGenerator.instance.GenerateFlowfield();
         Debug.Log("NavMesh baked at runtime!");
+    }
+
+    public GameObject FindBase()
+    {
+        return Base;
     }
 
 

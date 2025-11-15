@@ -8,7 +8,7 @@ public class FlowfieldGenerator : MonoBehaviour
 
 
     [Header("Flowfield Settings")]
-    public Transform target; // Base/drill
+    private Transform target; // Base /drill
     public int gridSizeX = 50;
     public int gridSizeZ = 50;
     public float cellSize = 2f;
@@ -19,15 +19,14 @@ public class FlowfieldGenerator : MonoBehaviour
     private void Awake()
     {
         instance = this;
-       
+
     }
 
     private void Start()
     {
         if (target == null)
         {
-            GameObject baseObj = GameObject.FindWithTag("Base");
-            if (baseObj != null) target = baseObj.transform;
+            target = GameManager.instance.FindBase().transform;
         }
         if(gridSizeX == 0  || gridSizeZ == 0)
         {

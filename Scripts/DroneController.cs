@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(ItemMagnet))]
 public class DroneController : MonoBehaviour
 {
     [Header("Movement")]
@@ -17,23 +16,49 @@ public class DroneController : MonoBehaviour
 
     [Header("Loot Collection")]
     public float scanRadius = 10f;
-    private float pickupDistance = 1.2f;
+    [SerializeField] private float pickupDistance = 1.2f;
     public float rescanInterval = 2f;
 
     private Rigidbody rb;
     private LootPickup targetLoot;
     private bool hasTarget = false;
 
+    private GameObject tube;
+    private Transform holdingSpot;
+    [SerializeField] private float animationSpeed = 2f;
+
+    [Header("Base")]
+    private Transform baseLocation; //Set this during placement of drone
+    private bool returningToBase = false;
+
+    private LayerMask groundMask;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        pickupDistance = GetComponent<ItemMagnet>().pickupRadius;
         rb.useGravity = false;
         rb.linearDamping = 1.5f;
         rb.angularDamping = 4f;
 
+        //Grab children components
+        tube = transform.Find("Tube").gameObject;
+        holdingSpot = transform.Find("HoldingSpot");
+        groundMask = LayerMask.GetMask("Ground");
+
+        //base
+        
+
         StartCoroutine(ScanForLoot());
     }
+
+    private void Start()
+    {
+        if (baseLocation == null)
+        {
+            baseLocation = GameManager.instance.FindBase().transform;
+        }
+    }
+    
 
     void FixedUpdate()
     {
@@ -44,9 +69,31 @@ public class DroneController : MonoBehaviour
             MoveToTarget();
             FaceMovementDirection(); 
         }
+        if(returningToBase && baseLocation != null)
+        {
+            MoveToBase();
+            FaceMovementDirection();
+        }
         else
         {
             StabilizeAndSlow();
+        }
+    }
+
+    void MoveToBase()
+    {
+        Vector3 direction = (baseLocation.position - transform.position);
+        direction.y = 0; // only horizontal movement
+        // Apply thrust toward base
+        rb.AddForce(direction.normalized * moveForce, ForceMode.Acceleration);
+
+        if (direction.magnitude <= pickupDistance)
+        {
+            //Drop Loot
+            returningToBase = false;
+
+            //Return to searching for loot
+            StartCoroutine(ScanForLoot());
         }
     }
 
@@ -64,7 +111,7 @@ public class DroneController : MonoBehaviour
 
     void MaintainHover()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight + 1f))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverHeight + 1f, groundMask))
         {
             float heightError = hoverHeight - hit.distance;
             float lift = heightError * hoverForce - rb.linearVelocity.y * damping;
@@ -93,17 +140,91 @@ public class DroneController : MonoBehaviour
         // If close enough, collect
         if (direction.magnitude <= pickupDistance)
         {
-            CollectLoot(targetLoot);
+            StartCoroutine(CollectLoot(targetLoot));
         }
     }
 
-    void CollectLoot(LootPickup loot)
+    IEnumerator CollectLoot(LootPickup loot)
     {
-        targetLoot = null;
         hasTarget = false;
         StopMovement();
+
+        targetLoot = null;
+        tube.GetComponent<MeshRenderer>().enabled = true;
+        Debug.Log("Starting collection animation.");
+        while (true)
+        {
+            Vector3 scale = new Vector3(tube.transform.localScale.x, this.transform.position.y * 2, tube.transform.localScale.z);
+            Vector3 newScale = Vector3.Lerp(tube.transform.localScale, scale, Time.deltaTime * animationSpeed);
+            Vector3 pos = new Vector3(tube.transform.position.x, this.transform.position.y / 2, tube.transform.position.z);
+
+            tube.transform.position = Vector3.Lerp(tube.transform.position, pos, Time.deltaTime * animationSpeed);
+
+            tube.transform.localScale = newScale;
+
+            if (Mathf.Abs(tube.transform.localScale.y - scale.y) < 0.01f)
+            {
+                tube.transform.localScale = scale;
+                Debug.Log("Animation complete.");
+                break;
+            }
+
+            yield return null;
+        }
+
+        // Attach loot to holding spot and shrink tube
+        while (true)
+        {
+            float holdingY = holdingSpot.position.y - loot.transform.localScale.y / 2;
+            Vector3 holdingLocation = new Vector3(holdingSpot.position.x, holdingY, holdingSpot.position.z);
+            loot.transform.position = Vector3.Lerp(loot.transform.position, holdingLocation, Time.deltaTime * animationSpeed);
+            loot.transform.rotation = Quaternion.Slerp(loot.transform.rotation, holdingSpot.rotation, Time.deltaTime * animationSpeed);
+
+
+            //Shrink Tube
+            
+            Vector3 scale = new Vector3(tube.transform.localScale.x, 0, tube.transform.localScale.z);
+            Vector3 newScale = Vector3.Lerp(tube.transform.localScale, scale, Time.deltaTime * animationSpeed);
+            Vector3 pos = new Vector3(tube.transform.position.x, transform.position.y, tube.transform.position.z);
+
+            tube.transform.position = Vector3.Lerp(tube.transform.position, pos, Time.deltaTime * animationSpeed);
+
+            tube.transform.localScale = newScale;
+
+            if (Mathf.Abs(tube.transform.localScale.y - scale.y) < 0.01f)
+            {
+                tube.transform.localScale = scale;
+                Debug.Log("Animation complete.");
+                tube.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+
+            // Check if loot is in position then proceeed
+            if (Mathf.Abs(loot.transform.position.y - holdingY) < 0.01f)
+            {
+                loot.transform.position = holdingLocation;
+                loot.transform.rotation = holdingSpot.rotation;
+
+                loot.transform.SetParent(holdingSpot);
+
+                loot.gameObject.tag = "CollectedLoot";
+
+                Debug.Log("Loot secured.");
+                break;
+            }
+            yield return null;
+        }
+
+        //Loot is being held and secured, ready for next target
+        FindBase();
+        returningToBase = true;
+        yield break;
     }
 
+    void FindBase()
+    {
+       baseLocation = GameManager.instance.FindBase().transform;
+    }
     void StabilizeAndSlow()
     {
         rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, stopSmooth * Time.fixedDeltaTime);
@@ -151,7 +272,12 @@ public class DroneController : MonoBehaviour
     {
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        StopCoroutine(ScanForLoot());
     }
+
+   
+
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;

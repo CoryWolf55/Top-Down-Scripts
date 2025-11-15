@@ -15,7 +15,10 @@ public class ItemMagnet : MonoBehaviour
 
         foreach (Collider collider in detectedColliders)
         {
-            if (collider.gameObject.GetComponent<LootPickup>() != null)
+            LootPickup loot = collider.gameObject.GetComponent<LootPickup>();
+            if(loot == null)
+                continue;
+            if (loot.Available())
             {
                 collider.transform.position = Vector3.Lerp(collider.transform.position, transform.position, Random.Range(itemFloatSpeed, itemFloatSpeed * 2) * Time.deltaTime);
 

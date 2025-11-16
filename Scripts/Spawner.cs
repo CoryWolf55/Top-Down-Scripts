@@ -131,7 +131,8 @@ public class Spawner : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-           GameObject lastEntity = Instantiate(entity, new Vector3(spawnPoint.x, (spawnPoint.y + entity.transform.localScale.y / 2) + 0.5f, spawnPoint.z), Quaternion.identity);
+            //GameObject lastEntity = Instantiate(entity, new Vector3(spawnPoint.x, (spawnPoint.y + entity.transform.localScale.y / 2) + 0.5f, spawnPoint.z), Quaternion.identity);
+            GameObject lastEntity = ObjectPoolManager.instance.Spawn(entity, new Vector3(spawnPoint.x, (spawnPoint.y + entity.transform.localScale.y / 2) + 0.5f, spawnPoint.z), Quaternion.identity);
             currentEntities.Add(lastEntity);
             currentNumOfEntitys = currentEntities.Count;
             EnemyController ec = lastEntity.GetComponent<EnemyController>();

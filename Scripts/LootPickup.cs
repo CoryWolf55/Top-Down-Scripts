@@ -15,10 +15,10 @@ public class LootPickup : MonoBehaviour
 
         if (item.mesh != null)
         {
-            Vector3 scale = transform.localScale;
+            
             MeshFilter mf = GetComponent<MeshFilter>();
             mf.sharedMesh = item.mesh;  // or .mesh if you want a unique copy
-            transform.localScale = scale;
+            this.transform.localScale = item.size;
 
             Debug.Log("LootPickup initialized with item: " + item.itemName + " Amount: " + amount);
         }
@@ -26,6 +26,9 @@ public class LootPickup : MonoBehaviour
         {
             Debug.LogWarning("Mesh is null on LootPickup initialization.");
         }
+
+        //Set Material
+        this.gameObject.GetComponent<MeshRenderer>().material = item.mat;
     }
 
     private void OnTriggerEnter(Collider other)

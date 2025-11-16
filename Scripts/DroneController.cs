@@ -27,6 +27,8 @@ public class DroneController : MonoBehaviour
     private Transform holdingSpot;
     [SerializeField] private float animationSpeed = 2f;
 
+    private Coroutine scanRoutine;
+
     [Header("Base")]
     private Transform baseLocation; //Set this during placement of drone
     private bool returningToBase = false;
@@ -48,7 +50,7 @@ public class DroneController : MonoBehaviour
         //base
         
 
-        StartCoroutine(ScanForLoot());
+        scanRoutine = StartCoroutine(ScanForLoot());
     }
 
     private void Start()
@@ -91,9 +93,18 @@ public class DroneController : MonoBehaviour
         {
             //Drop Loot
             returningToBase = false;
+            GameObject collectedLoot = holdingSpot.GetChild(0).gameObject;
+            collectedLoot.transform.SetParent(null);
+            Rigidbody lootRb = collectedLoot.GetComponent<Rigidbody>();
+            if (lootRb == null)
+            {
+                lootRb = collectedLoot.AddComponent<Rigidbody>();
+            }
+            lootRb.useGravity = true;
+            collectedLoot.GetComponent<Collider>().isTrigger = false;
 
             //Return to searching for loot
-            StartCoroutine(ScanForLoot());
+            scanRoutine = StartCoroutine(ScanForLoot());
         }
     }
 
@@ -146,6 +157,7 @@ public class DroneController : MonoBehaviour
 
     IEnumerator CollectLoot(LootPickup loot)
     {
+        
         hasTarget = false;
         StopMovement();
 
@@ -173,6 +185,11 @@ public class DroneController : MonoBehaviour
         }
 
         // Attach loot to holding spot and shrink tube
+        if (loot.gameObject.GetComponent<Rigidbody>() != null)
+        {
+            loot.gameObject.GetComponent<Rigidbody>().useGravity = false;
+        }
+
         while (true)
         {
             float holdingY = holdingSpot.position.y - loot.transform.localScale.y / 2;
@@ -196,6 +213,7 @@ public class DroneController : MonoBehaviour
                 tube.transform.localScale = scale;
                 Debug.Log("Animation complete.");
                 tube.GetComponent<MeshRenderer>().enabled = false;
+                
             }
 
 
@@ -216,9 +234,14 @@ public class DroneController : MonoBehaviour
         }
 
         //Loot is being held and secured, ready for next target
-        FindBase();
-        returningToBase = true;
-        yield break;
+        
+        
+            FindBase();
+            returningToBase = true;
+            yield break;
+        
+      
+
     }
 
     void FindBase()
@@ -272,7 +295,11 @@ public class DroneController : MonoBehaviour
     {
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        StopCoroutine(ScanForLoot());
+        if (scanRoutine != null)
+        {
+            StopCoroutine(scanRoutine);
+            scanRoutine = null;
+        }
     }
 
    

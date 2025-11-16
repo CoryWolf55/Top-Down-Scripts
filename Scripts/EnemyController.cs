@@ -208,7 +208,7 @@ public class EnemyController : MonoBehaviour
     {
         Spawner.instance.RemoveEntity(gameObject);
         GetComponent<LootDrop>().Drop(new Vector3(transform.position.x, transform.position.y - transform.position.y *0.5f, transform.position.z));
-        Destroy(gameObject);
+        ObjectPoolManager.instance.Return(this.gameObject);
     }
 
     public void Init()

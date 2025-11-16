@@ -37,6 +37,10 @@ public class PlayerController : MonoBehaviour
         private float currentHealth;
     private HealthBarManager healthBar;
 
+    [Header("Crosshair")]
+    [SerializeField] private GameObject crosshair;
+    [SerializeField] private float crosshairSpeed;
+
 
 
 
@@ -74,7 +78,9 @@ public class PlayerController : MonoBehaviour
         healthBar = GetComponentInChildren<HealthBarManager>();
         healthBar.SetMaxHealth(maxHealth);
         currentHealth = maxHealth;
-
+        
+        //Crosshair
+        Cursor.visible = false;
     }
 
 
@@ -100,7 +106,14 @@ public class PlayerController : MonoBehaviour
 
             transform.LookAt(new Vector3(pointToLook.x, transform.position.y, pointToLook.z));
             point = pointToLook;
+
+            CrosshairLogic(pointToLook);
         }
+    }
+
+    private void CrosshairLogic(Vector3 point)
+    {
+        crosshair.transform.position = Vector3.Lerp(crosshair.transform.position, point, Time.deltaTime * crosshairSpeed);
     }
 
 

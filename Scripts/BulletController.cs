@@ -26,7 +26,7 @@ public class BulletController : MonoBehaviour
        // Rotation();
        TrackingBullet();
         lifeTime -= Time.deltaTime;
-        if(lifeTime <= 0) Destroy(gameObject);
+        if(lifeTime <= 0) ObjectPoolManager.instance.Return(this.gameObject);
 
 
     }
@@ -125,8 +125,8 @@ public class BulletController : MonoBehaviour
                 hitTarget.GetComponent<EnemyController>().TakeDamage(gunData.damage);
             }
         }
-        
-            Destroy(gameObject);
+
+        ObjectPoolManager.instance.Return(this.gameObject);
        
 
     }
@@ -143,13 +143,13 @@ public class BulletController : MonoBehaviour
             //Raycast to nearest enemies(within radius), if there is an obstical in the way ignore damage, divide damage by distance if less than 1 = max damage
             
             //pushes them back
-            /*
+            
             Rigidbody rigg = nearby.GetComponent<Rigidbody>();
             if (rigg != null)
             {
                 rigg.AddExplosionForce(gunData.bullet.expForce, transform.position, gunData.bullet.expRadius);
             }
-            */
+            
         }
     }
 

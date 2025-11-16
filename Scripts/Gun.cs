@@ -34,7 +34,8 @@ public class Gun : MonoBehaviour
         }
         gunData.currentAmmo--;
 
-        GameObject lastBullet = Instantiate(gunData.bullet.model, muzzle.position, muzzle.rotation);
+       // GameObject lastBullet = Instantiate(gunData.bullet.model, muzzle.position, muzzle.rotation);
+        GameObject lastBullet = ObjectPoolManager.instance.Spawn(gunData.bullet.model, muzzle.position, muzzle.rotation);
         Rigidbody newBulletRigidbody = lastBullet.GetComponent<Rigidbody>();
         if (newBulletRigidbody != null || gunData.bullet.followRadius == 0)
         {

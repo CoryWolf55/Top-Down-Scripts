@@ -22,7 +22,7 @@ public class PowerManager : MonoBehaviour
     #endregion
 
     private float maxPower = 100f;
-    private float currentUnitsPerMin = 0f;
+    private float currentUnitsPerMin = 1000000f; //Testing
     
 
     public void AddPowerGeneration(float rate)
@@ -37,9 +37,19 @@ public class PowerManager : MonoBehaviour
         if (maxPower < 0f) maxPower = 0f;
     }
 
+    public void UsePower(float rate)
+    {
+        currentUnitsPerMin += rate;
+    }
+
+    public void StopUsingPower(float rate)
+    {
+        currentUnitsPerMin -= rate;
+    }
+
     public bool PowerAvailability(float requiredUnitsPerMin)
     {
-        return currentUnitsPerMin >= currentUnitsPerMin + requiredUnitsPerMin;
+        return maxPower < currentUnitsPerMin + requiredUnitsPerMin;
     }
 
     public bool CheckZonePower(float size)

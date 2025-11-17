@@ -166,6 +166,7 @@ public class DroneController : MonoBehaviour
         Debug.Log("Starting collection animation.");
         while (true)
         {
+
             Vector3 scale = new Vector3(tube.transform.localScale.x, this.transform.position.y * 2, tube.transform.localScale.z);
             Vector3 newScale = Vector3.Lerp(tube.transform.localScale, scale, Time.deltaTime * animationSpeed);
             Vector3 pos = new Vector3(tube.transform.position.x, this.transform.position.y / 2, tube.transform.position.z);

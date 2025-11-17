@@ -32,6 +32,16 @@ public class ObjectPoolManager : MonoBehaviour
             selected.pooledObjects.RemoveAt(0);
 
             obj.transform.SetPositionAndRotation(location, rotation);
+
+            TrailRenderer trail = obj.GetComponentInChildren<TrailRenderer>();
+            if (trail != null)
+            {
+                trail.enabled = false;
+                trail.Clear();
+                trail.enabled = true;
+            }
+
+
             obj.SetActive(true);
             return obj;
         }

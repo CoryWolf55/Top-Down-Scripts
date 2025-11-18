@@ -23,12 +23,20 @@ public class PowerManager : MonoBehaviour
 
     private float maxPower = 100f;
     private float currentUnitsPerMin = 1000000f; //Testing
-    
+
+    [Header("GameObjects")]
+    List<GameObject> objectTypes = new List<GameObject>();
+    Dictionary<string, objectTypes> poweredObjects = new Dictionary<string, objectTypes>();
+
+
+    private void OutOfPower()
+    {
+        //Effects
+    }
 
     public void AddPowerGeneration(float rate)
     {
-        if(PowerAvailability(rate))
-            maxPower += rate;
+        maxPower += rate;
     }
 
     public void RemovePowerGeneration(float rate)
@@ -37,19 +45,37 @@ public class PowerManager : MonoBehaviour
         if (maxPower < 0f) maxPower = 0f;
     }
 
-    public void UsePower(float rate)
+    public void UsePower(float rate, GameObject obj)
     {
         currentUnitsPerMin += rate;
+        
+        //Add object
+        string key = obj.name;
+        if (!poweredObjects.TryGetValue(key, out objectTypes selected))
+        {
+            //If object type doesnt exist add to stack
+            selected = new List<GameObject>();
+            poweredObjects.Add(key, selected);
+        }
+
+        //Add power outage effects if out
+        if(currentUnitsPerMin > maxPower)
+        {
+            OutOfPower();
+        }
     }
 
-    public void StopUsingPower(float rate)
+    public void StopUsingPower(float rate, GameObject obj)
     {
+        string key = obj.name;
+        if (!poweredObjects.TryGetValue(key, out objectTypes selected))
+        {
+            //If object type doesnt exist add to stack
+           selected = poweredObjects(key);
+           selected.Remove(obj;)
+        }
+        
         currentUnitsPerMin -= rate;
-    }
-
-    public bool PowerAvailability(float requiredUnitsPerMin)
-    {
-        return maxPower < currentUnitsPerMin + requiredUnitsPerMin;
     }
 
     public bool CheckZonePower(float size)
@@ -57,9 +83,7 @@ public class PowerManager : MonoBehaviour
         //Check if current power generation meets the zone requirements
         //simple formula for testing purposes
         float powerDraw = size;
-
-
-        return false;
+        return maxPower > (powerDraw + currentUnitsPerMin);
 
         //If not, trigger power outage effects
     }

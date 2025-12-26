@@ -24,6 +24,7 @@ public class FlowfieldGenerator : MonoBehaviour
 
     private void Start()
     {
+        LoadingManager.instance.StartLoading(gameObject);
         if (target == null)
         {
             target = GameManager.instance.FindBase().transform;
@@ -34,7 +35,7 @@ public class FlowfieldGenerator : MonoBehaviour
             gridSizeZ = (int)Spawner.instance.maxDistanceFromPlayerToSpawn;
         }
         ComputeMapOrigin();
-        
+        LoadingManager.instance.StopLoading(gameObject);
     }
 
     private void ComputeMapOrigin()

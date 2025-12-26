@@ -51,7 +51,8 @@ public class WaveManager : MonoBehaviour
 
     private void Update()
     {
-        if(startBreakTime)
+        if (Spawner.instance.CanSpawn() == false) return;
+        if (startBreakTime)
         {
             BreakTimer();  
         }

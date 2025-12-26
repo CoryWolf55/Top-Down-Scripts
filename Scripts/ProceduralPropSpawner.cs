@@ -20,7 +20,9 @@ public class ProceduralPropSpawner : MonoBehaviour
 
     private void Start()
     {
+        LoadingManager.instance.StartLoading(gameObject);
         GenerateEnvironment();
+        LoadingManager.instance.StopLoading(gameObject);
     }
 
     public void GenerateEnvironment()

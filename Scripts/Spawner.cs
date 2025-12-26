@@ -225,7 +225,16 @@ public class Spawner : MonoBehaviour
 
 
     }
+
+    public void SetCanSpawn(bool set)
+    {
+        canSpawn = set;
+    }
+    public bool CanSpawn()
+    {
+        return canSpawn;
+    }
     #endregion normalSpawner
 
-    
+
 }

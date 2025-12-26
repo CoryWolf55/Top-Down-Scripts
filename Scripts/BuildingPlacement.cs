@@ -48,6 +48,7 @@ public class BuildingPlacement : MonoBehaviour
 
     private void Start()
     {
+        LoadingManager.instance.StartLoading(gameObject);
         playerTransform = transform;
 
         currentPreview = Instantiate(buildingToPlace.prefab, Vector3.up * 100f, Quaternion.identity);
@@ -58,6 +59,7 @@ public class BuildingPlacement : MonoBehaviour
 
         CreateRuntimeGrid();
         runtimeGrid.SetActive(false);
+        LoadingManager.instance.StopLoading(gameObject);
     }
 
     private void Update()

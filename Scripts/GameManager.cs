@@ -10,15 +10,27 @@ public class GameManager : MonoBehaviour
 
     private NavMeshSurface navSurface;
     public Transform surface;
+    private LoadingManager loadingManager;
+    [SerializeField] private GameObject loadingManagerPrefab;
+    [SerializeField] private GameObject gameContainers;
+    private Spawner spawnManager;
 
     void Awake()
     {
+        if (LoadingManager.instance == null)
+        {
+            Instantiate(loadingManagerPrefab);
+        }
         instance = this;
-        
+        gameContainers.SetActive(false);
+        spawnManager = GetComponent<Spawner>();
+        spawnManager.SetCanSpawn(false);
     }
 
     IEnumerator Start()
     {
+        loadingManager = LoadingManager.instance;
+        loadingManager.StartLoading(gameObject);
         // Wait a bit so procedural objects can spawn first
         navSurface = surface.GetComponent<NavMeshSurface>();
         if(navSurface == null)
@@ -28,6 +40,7 @@ public class GameManager : MonoBehaviour
         }
         yield return new WaitForSeconds(0.5f);
         BakeNavMesh();
+        loadingManager.StopLoading(gameObject);
     }
 
     public void BakeNavMesh()
@@ -51,6 +64,12 @@ public class GameManager : MonoBehaviour
     public Transform GetSurface()
     {
         return surface;
+    }
+
+    public void ActiveGameContainers()
+    {
+        gameContainers.SetActive(true);
+        spawnManager.SetCanSpawn(true);
     }
 
 

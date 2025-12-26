@@ -64,7 +64,7 @@ public class DrillController : MonoBehaviour
         if(PowerManager.instance.PowerAvailability(powerUse))
         {
             hasPower = true;
-            PowerManager.instance.UsePower(powerUse);
+            PowerManager.instance.UsePower(powerUse, this.gameObject);
             if(startAnimation == null)
             {
                 startAnimation = StartCoroutine(DrillAnimation());
@@ -74,7 +74,7 @@ public class DrillController : MonoBehaviour
         {
             
             hasPower = false;
-            PowerManager.instance.StopUsingPower(powerUse);
+            PowerManager.instance.StopUsingPower(powerUse, this.gameObject);
             if (startAnimation == null)
                 return;
             StopAllCoroutines();

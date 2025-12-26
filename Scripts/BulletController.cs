@@ -106,6 +106,12 @@ public class BulletController : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
+
+        
+        Particles(collision);
+       
+
+
         if (gunData.bullet.expRadius != 0)
         {
             ParticleSystem pc = Instantiate(gunData.bullet.particleSystem, transform.position, Quaternion.identity);
@@ -125,10 +131,32 @@ public class BulletController : MonoBehaviour
                 hitTarget.GetComponent<EnemyController>().TakeDamage(gunData.damage);
             }
         }
-
+        //Return bullet to pool
         ObjectPoolManager.instance.Return(this.gameObject);
        
 
+    }
+
+    private void Particles(Collision collision)
+    {
+        Quaternion newRot = transform.rotation * Quaternion.Euler(0f, 180f, 0f); ;
+        ParticleSystem hitParticle = Instantiate(gunData.bullet.hitP, transform.position, newRot);
+        Renderer hitRenderer = collision.gameObject.GetComponent<Renderer>();
+        Material hitMat;
+        if (hitRenderer != null)
+        {
+            hitMat = hitRenderer.material;
+        }
+        else
+        {
+            hitMat = this.GetComponent<Renderer>().material;
+        }
+        ParticleSystemRenderer psRenderer = hitParticle.GetComponent<ParticleSystemRenderer>();
+        if (psRenderer != null)
+        {
+            psRenderer.material = hitMat;
+        }
+        Destroy(hitParticle, 3);
     }
 
     private void Explosion()

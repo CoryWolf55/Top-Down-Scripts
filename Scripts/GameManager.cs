@@ -8,7 +8,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [SerializeField] private GameObject Base;
 
-    public NavMeshSurface surface;
+    private NavMeshSurface navSurface;
+    public Transform surface;
 
     void Awake()
     {
@@ -19,6 +20,12 @@ public class GameManager : MonoBehaviour
     IEnumerator Start()
     {
         // Wait a bit so procedural objects can spawn first
+        navSurface = surface.GetComponent<NavMeshSurface>();
+        if(navSurface == null)
+        {
+            Debug.LogError("No NavMeshSurface component found on the specified surface Transform.");
+            yield break;
+        }
         yield return new WaitForSeconds(0.5f);
         BakeNavMesh();
     }
@@ -31,7 +38,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         //Build the AI Routes
-        surface.BuildNavMesh();
+        navSurface.BuildNavMesh();
         FlowfieldGenerator.instance.GenerateFlowfield();
         Debug.Log("NavMesh baked at runtime!");
     }
@@ -39,6 +46,11 @@ public class GameManager : MonoBehaviour
     public GameObject FindBase()
     {
         return Base;
+    }
+
+    public Transform GetSurface()
+    {
+        return surface;
     }
 
 

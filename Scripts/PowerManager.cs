@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerManager : MonoBehaviour
@@ -25,10 +27,9 @@ public class PowerManager : MonoBehaviour
     private float currentUnitsPerMin = 1000000f; //Testing
 
     [Header("GameObjects")]
-    List<GameObject> objectTypes = new List<GameObject>();
-    Dictionary<string, objectTypes> poweredObjects = new Dictionary<string, objectTypes>();
+    Dictionary<string, List<GameObject>> poweredObjects = new Dictionary<string, List<GameObject>>();
 
-
+    
     private void OutOfPower()
     {
         //Effects
@@ -51,7 +52,7 @@ public class PowerManager : MonoBehaviour
         
         //Add object
         string key = obj.name;
-        if (!poweredObjects.TryGetValue(key, out objectTypes selected))
+        if (!poweredObjects.TryGetValue(key, out List<GameObject> selected))
         {
             //If object type doesnt exist add to stack
             selected = new List<GameObject>();
@@ -68,11 +69,11 @@ public class PowerManager : MonoBehaviour
     public void StopUsingPower(float rate, GameObject obj)
     {
         string key = obj.name;
-        if (!poweredObjects.TryGetValue(key, out objectTypes selected))
+        if (!poweredObjects.TryGetValue(key, out List<GameObject> selected))
         {
             //If object type doesnt exist add to stack
-           selected = poweredObjects(key);
-           selected.Remove(obj;)
+            selected = poweredObjects[key];
+            selected.Remove(obj);
         }
         
         currentUnitsPerMin -= rate;
@@ -86,6 +87,11 @@ public class PowerManager : MonoBehaviour
         return maxPower > (powerDraw + currentUnitsPerMin);
 
         //If not, trigger power outage effects
+    }
+
+    public bool PowerAvailability(float power)
+    {
+        return maxPower > power + currentUnitsPerMin;
     }
 
 }

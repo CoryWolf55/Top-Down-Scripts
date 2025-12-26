@@ -49,7 +49,7 @@ public class ValidPlacementCheck : MonoBehaviour
         // only notify BP when state changes
         if (blocked != lastBlocked)
         {
-            BP.OnTrigger(blocked);
+           // BP.OnTrigger(blocked);
             lastBlocked = blocked;
         }
     }

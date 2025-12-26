@@ -41,7 +41,6 @@ public class ObjectPoolManager : MonoBehaviour
                 trail.enabled = true;
             }
 
-
             obj.SetActive(true);
             return obj;
         }

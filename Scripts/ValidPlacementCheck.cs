@@ -11,6 +11,7 @@ public class ValidPlacementCheck : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(gameObject.name);
         if (BP == null) return;
 
         // Compute the cell center based on the current transform and the BuildingPlacement cellSize

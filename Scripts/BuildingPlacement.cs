@@ -134,7 +134,10 @@ public class BuildingPlacement : MonoBehaviour
             }
         }
 
-        SetMesh(canPlace ? correctPlacementMat : incorrectPlacementMat);
+        if(canPlace)
+            SetMesh(correctPlacementMat);
+        else
+            SetMesh(incorrectPlacementMat);
 
         if (projected != null)
         {
@@ -305,8 +308,14 @@ public class BuildingPlacement : MonoBehaviour
 
     private void SetMesh(Material mat)
     {
-        foreach (Transform child in currentPreview.transform)
-            child.GetComponent<Renderer>().material = mat;
+        if (projected == null) return;
+
+        foreach (Transform child in projected.transform)
+        {
+            Renderer rend = child.GetComponent<Renderer>();
+            if (rend != null)
+                rend.material = mat;
+        }
     }
 
     private void EnableMesh(bool enable)
